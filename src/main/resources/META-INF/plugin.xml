@@ -1,0 +1,59 @@
+<idea-plugin version="2">
+    <id>CopyRestUrl</id>
+    <name>Copy REST Url demo2</name>
+    <version>1.5</version>
+    <vendor email="miguelcordovadev@gmail.com"
+            url="https://github.com/miguelcordovam/intellij_plugins/tree/master/CopyRestUrl"></vendor>
+    <description>
+
+        <![CDATA[
+      Copy REST Url will copy REST url from a Spring @Controller or @RestController method. <br>
+      Just right-click on the method, and select "Copy REST Url" and it will copy the url to the clipboard.<br>
+      You can also use ctrl + alt + R shortcut over the method name. Then you can paste it on the browser or anywhere you want. <br><br>
+      Features:<br>
+      - If your application is using Spring-Boot and you have an application.properties file, it will look for these 2 keys: server.port, server.contextPath. And if they are found, it will add those values to the final url.<br>
+      - The plugin will only be available for methods with @RequestMapping, @GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping annotation.<br>
+      - Works for any http method.<br>
+      - For GET methods, it will include query string on the url, like this: "?param1=X&amp;param2=X..."
+]]>
+
+    </description>
+
+    <change-notes>
+
+        <![CDATA[
+        1.5 <br>
+        - Support for Spring Framework annotation: @RestController<br>
+
+        1.4 <br>
+        - Support for Spring Framework 4.3 annotations: @GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping<br>
+        - Support for path and value. <br>
+
+        1.3 <br>
+        - Bugs Fixing <br>
+
+        1.2 <br>
+        - Adding support for methods with this annotation @RequestMapping(method = 'SOME_HTTP_METHOD')  <br>
+
+        1.1 <br>
+        - Adding support for @RequestParam("paramName") in methods <br>
+        - Adding shortcut (control + alt + R) <br>
+  ]]>
+
+
+    </change-notes>
+
+    <idea-version since-build="145.0"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="copyresturl" class="com.kunlunsoft.copyurl.action.CopyRestUrlAction" text="Copy REST Url">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt R" keymap="$default"/>
+        </action>
+    </actions>
+
+</idea-plugin>
