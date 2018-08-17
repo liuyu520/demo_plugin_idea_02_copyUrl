@@ -69,13 +69,19 @@ public class CopyRestUrlAction extends AnAction {
             }
 
             StringBuilder url = new StringBuilder();
-            url.append(LOCALHOST);
-            url.append(getPortAndContextPath(e.getProject()));
+            String port2 = getPortAndContextPath(e.getProject());
+            if (null != port2 && port2.length() > 0) {
+                url.append(LOCALHOST);
+                url.append(port2);
+            }
+
             url.append(classUrl);
             url.append(methodUrl);
-            url.append(queryList);
+//            url.append(queryList);
 
-            CopyPasteManager.getInstance().setContents(new StringSelection(url.toString()));
+            CopyPasteManager.getInstance().setContents(new StringSelection(url.toString()
+                    .replace("///", "/")
+                    .replace("//", "/")));
         }
     }
 
