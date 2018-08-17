@@ -5,19 +5,23 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 
 import java.awt.datatransfer.StringSelection;
 
+import static com.intellij.openapi.actionSystem.CommonDataKeys.*;
 import static com.kunlunsoft.copyurl.common.SpringAnnotations.*;
 import static com.kunlunsoft.copyurl.util.PropertiesUtil.getPropertyValue;
 import static com.kunlunsoft.copyurl.util.PsiElementUtil.*;
 import static com.kunlunsoft.copyurl.util.SpringUtil.containsSpringAnnotation;
 import static com.kunlunsoft.copyurl.util.SpringUtil.isRestMethod;
-import static com.intellij.openapi.actionSystem.CommonDataKeys.*;
 
+/**
+ * @author whuanghkl
+ */
 public class CopyRestUrlAction extends AnAction {
 
     public static final String GET = "GET";
@@ -69,7 +73,8 @@ public class CopyRestUrlAction extends AnAction {
             }
 
             StringBuilder url = new StringBuilder();
-            String port2 = getPortAndContextPath(e.getProject());
+            Project project = e.getProject();
+            String port2 = getPortAndContextPath(project);
             if (null != port2 && port2.length() > 0) {
                 url.append(LOCALHOST);
                 url.append(port2);
@@ -79,9 +84,11 @@ public class CopyRestUrlAction extends AnAction {
             url.append(methodUrl);
 //            url.append(queryList);
 
-            CopyPasteManager.getInstance().setContents(new StringSelection(url.toString()
+            String fullUrl = url.toString()
                     .replace("///", "/")
-                    .replace("//", "/")));
+                    .replace("//", "/");
+            CopyPasteManager.getInstance().setContents(new StringSelection(fullUrl));
+            Messages.showMessageDialog(project, fullUrl, "接口路径", Messages.getInformationIcon());
         }
     }
 
