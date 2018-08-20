@@ -5,10 +5,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.string.widget.util.ValueWidget;
 
 import java.awt.datatransfer.StringSelection;
 
@@ -33,6 +33,28 @@ public class CopyRestUrlAction extends AnAction {
     private static final String SERVER_PORT = "server.port";
     private static final String SERVER_CONTEXT_PATH = "server.contextPath";
 
+    private static String getMethodUrl(String methodUrl, String methodName) {
+        String listFilterUrl = "/listfilter/json";
+        switch (methodName) {
+            case "listTODO":
+                methodUrl = "/list/json";
+                break;
+            case "buildDaoFilterChain":
+                methodUrl = listFilterUrl;
+                break;
+            case "buildQueryFilterChain":
+                methodUrl = listFilterUrl;
+                break;
+            case "detailTODO":
+                methodUrl = "/2/json";
+                break;
+            case "beforeSave":
+                methodUrl = "/add/json";
+                break;
+        }
+        return methodUrl;
+    }
+
     @Override
     public void actionPerformed(AnActionEvent e) {
 
@@ -49,7 +71,7 @@ public class CopyRestUrlAction extends AnAction {
             String classUrl = getUrl(classModifierList, REQUEST_MAPPING_QUALIFIED_NAME);
 
             String methodUrl = "";
-
+            Project project = e.getProject();
             if (containsSpringAnnotation(REQUEST_MAPPING_QUALIFIED_NAME, methodModifierList)) {
                 methodUrl = getUrl(methodModifierList, REQUEST_MAPPING_QUALIFIED_NAME);
 
@@ -71,9 +93,13 @@ public class CopyRestUrlAction extends AnAction {
             } else if (containsSpringAnnotation(PUT_MAPPING_QUALIFIED_NAME, methodModifierList)) {
                 methodUrl = getUrl(methodModifierList, PUT_MAPPING_QUALIFIED_NAME);
             }
+            if (ValueWidget.isNullOrEmpty(methodUrl)) {
+                String methodName = psiMethod.getName();
+//                Messages.showMessageDialog(project, methodName, "接口路径", Messages.getInformationIcon());
+                methodUrl = getMethodUrl(methodUrl, methodName);
+            }
 
             StringBuilder url = new StringBuilder();
-            Project project = e.getProject();
             String port2 = getPortAndContextPath(project);
             if (null != port2 && port2.length() > 0) {
                 url.append(LOCALHOST);
@@ -88,7 +114,7 @@ public class CopyRestUrlAction extends AnAction {
                     .replace("///", "/")
                     .replace("//", "/");
             CopyPasteManager.getInstance().setContents(new StringSelection(fullUrl));
-            Messages.showMessageDialog(project, fullUrl, "接口路径", Messages.getInformationIcon());
+//            Messages.showMessageDialog(project, fullUrl, "接口路径", Messages.getInformationIcon());
         }
     }
 
