@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.string.widget.util.ValueWidget;
 
 import java.awt.datatransfer.StringSelection;
 
@@ -36,12 +35,11 @@ public class CopyRestUrlAction extends AnAction {
     private static String getMethodUrl(String methodUrl, String methodName) {
         String listFilterUrl = "/listfilter/json";
         switch (methodName) {
+            case "beforeList":
             case "listTODO":
                 methodUrl = "/list/json";
                 break;
             case "buildDaoFilterChain":
-                methodUrl = listFilterUrl;
-                break;
             case "buildQueryFilterChain":
                 methodUrl = listFilterUrl;
                 break;
@@ -93,7 +91,7 @@ public class CopyRestUrlAction extends AnAction {
             } else if (containsSpringAnnotation(PUT_MAPPING_QUALIFIED_NAME, methodModifierList)) {
                 methodUrl = getUrl(methodModifierList, PUT_MAPPING_QUALIFIED_NAME);
             }
-            if (ValueWidget.isNullOrEmpty(methodUrl)) {
+            if (null == methodUrl || methodUrl.length() == 0) {
                 String methodName = psiMethod.getName();
 //                Messages.showMessageDialog(project, methodName, "接口路径", Messages.getInformationIcon());
                 methodUrl = getMethodUrl(methodUrl, methodName);
