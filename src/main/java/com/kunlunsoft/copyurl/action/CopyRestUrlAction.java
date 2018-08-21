@@ -49,6 +49,9 @@ public class CopyRestUrlAction extends AnAction {
             case "beforeSave":
                 methodUrl = "/add/json";
                 break;
+            case "deleteTODO":
+                methodUrl = "/delete/3/json";
+                break;
         }
         return methodUrl;
     }
