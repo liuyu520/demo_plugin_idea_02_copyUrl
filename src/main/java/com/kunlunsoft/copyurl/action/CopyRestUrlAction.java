@@ -108,6 +108,10 @@ public class CopyRestUrlAction extends AnAction {
             }
 
             url.append(classUrl);
+            if (!classUrl.endsWith("/")
+                    && (!methodUrl.startsWith("/"))) {
+                url.append("/");
+            }
             url.append(methodUrl);
 //            url.append(queryList);
 
