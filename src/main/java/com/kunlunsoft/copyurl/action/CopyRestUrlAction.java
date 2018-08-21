@@ -1,5 +1,6 @@
 package com.kunlunsoft.copyurl.action;
 
+import com.common.util.SystemHWUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
@@ -78,13 +79,13 @@ public class CopyRestUrlAction extends AnAction {
 
                 String httpMethod = getAnnotationValue(methodModifierList, METHOD, REQUEST_MAPPING_QUALIFIED_NAME);
 
-                if (httpMethod.equalsIgnoreCase(GET) || httpMethod.equalsIgnoreCase(REQUEST_METHOD_GET) || httpMethod.isEmpty()) {
-                    queryList = createQueryWithParameters(psiMethod.getParameterList());
-                }
+                /*if (httpMethod.equalsIgnoreCase(GET) || httpMethod.equalsIgnoreCase(REQUEST_METHOD_GET) || httpMethod.isEmpty()) {
+
+                }*/
 
             } else if (containsSpringAnnotation(GET_MAPPING_QUALIFIED_NAME, methodModifierList)) {
                 methodUrl = getUrl(methodModifierList, GET_MAPPING_QUALIFIED_NAME);
-                queryList = createQueryWithParameters(psiMethod.getParameterList());
+//                queryList = createQueryWithParameters(psiMethod.getParameterList());
             } else if (containsSpringAnnotation(POST_MAPPING_QUALIFIED_NAME, methodModifierList)) {
                 methodUrl = getUrl(methodModifierList, POST_MAPPING_QUALIFIED_NAME);
             } else if (containsSpringAnnotation(PATCH_MAPPING_QUALIFIED_NAME, methodModifierList)) {
@@ -94,6 +95,7 @@ public class CopyRestUrlAction extends AnAction {
             } else if (containsSpringAnnotation(PUT_MAPPING_QUALIFIED_NAME, methodModifierList)) {
                 methodUrl = getUrl(methodModifierList, PUT_MAPPING_QUALIFIED_NAME);
             }
+            queryList = createParameters(psiMethod.getParameterList());
             if (null == methodUrl || methodUrl.length() == 0) {
                 String methodName = psiMethod.getName();
 //                Messages.showMessageDialog(project, methodName, "接口路径", Messages.getInformationIcon());
@@ -107,18 +109,25 @@ public class CopyRestUrlAction extends AnAction {
                 url.append(port2);
             }
 
+            // /redis/long/map/add/json
             url.append(classUrl);
             if (!classUrl.endsWith("/")
                     && (!methodUrl.startsWith("/"))) {
                 url.append("/");
             }
             url.append(methodUrl);
-//            url.append(queryList);
+            if (null != queryList && (!queryList.isEmpty())) {
+                url.append(SystemHWUtil.CRLF_WINDOW).append(SystemHWUtil.CRLF_WINDOW);
+                //id=X&key=X&value=X
+                url.append(queryList);
+            }
 
             String fullUrl = url.toString()
                     .replace("///", "/")
                     .replace("//", "/");
+            CopyPasteManager.getInstance().setContents(new StringSelection(queryList));
             CopyPasteManager.getInstance().setContents(new StringSelection(fullUrl));
+//            ToastMessage.toast("copy success",1000);
 //            Messages.showMessageDialog(project, fullUrl, "接口路径", Messages.getInformationIcon());
         }
     }

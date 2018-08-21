@@ -1,5 +1,6 @@
 package com.kunlunsoft.copyurl.util;
 
+import com.common.util.SystemHWUtil;
 import com.intellij.psi.*;
 import com.kunlunsoft.copyurl.common.SpringAnnotations;
 
@@ -85,6 +86,32 @@ public class PsiElementUtil {
         }
 
         return query.toString();
+    }
+
+
+    public static String createParameters(PsiParameterList parameterList) {
+        StringBuilder query = new StringBuilder();
+        List<String> params = new ArrayList<>();
+
+        PsiParameter[] parameters = parameterList.getParameters();
+
+        for (PsiParameter parameter : parameters) {
+            if (SystemHWUtil.isContains(new String[]{"request", "response", "model", "session", "httpSession"}, parameter.getName())) {
+                continue;
+            }
+            PsiModifierList modifierList = parameter.getModifierList();
+            String paramValue = null;
+            if (containsSpringAnnotation(REQUEST_PARAM, modifierList)) {
+                paramValue = getAnnotationValue(modifierList, "value", REQUEST_PARAM);
+            }
+            if (null == paramValue || paramValue.isEmpty()) {
+                params.add(parameter.getName());
+            } else {
+                params.add(paramValue);
+            }
+        }
+
+        return params.stream().map(s -> s + "=X").collect(joining("&"));
     }
 
     public static String getAnnotationValue(PsiModifierList modifierList, String attributeName, SpringAnnotations springAnnotation) {
