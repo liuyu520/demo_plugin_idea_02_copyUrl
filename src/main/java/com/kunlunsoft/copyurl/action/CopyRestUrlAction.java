@@ -1,6 +1,5 @@
 package com.kunlunsoft.copyurl.action;
 
-import com.common.util.SystemHWUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
@@ -74,27 +73,7 @@ public class CopyRestUrlAction extends AnAction {
 
             String methodUrl = "";
             Project project = e.getProject();
-            if (containsSpringAnnotation(REQUEST_MAPPING_QUALIFIED_NAME, methodModifierList)) {
-                methodUrl = getUrl(methodModifierList, REQUEST_MAPPING_QUALIFIED_NAME);
-
-                String httpMethod = getAnnotationValue(methodModifierList, METHOD, REQUEST_MAPPING_QUALIFIED_NAME);
-
-                /*if (httpMethod.equalsIgnoreCase(GET) || httpMethod.equalsIgnoreCase(REQUEST_METHOD_GET) || httpMethod.isEmpty()) {
-
-                }*/
-
-            } else if (containsSpringAnnotation(GET_MAPPING_QUALIFIED_NAME, methodModifierList)) {
-                methodUrl = getUrl(methodModifierList, GET_MAPPING_QUALIFIED_NAME);
-//                queryList = createQueryWithParameters(psiMethod.getParameterList());
-            } else if (containsSpringAnnotation(POST_MAPPING_QUALIFIED_NAME, methodModifierList)) {
-                methodUrl = getUrl(methodModifierList, POST_MAPPING_QUALIFIED_NAME);
-            } else if (containsSpringAnnotation(PATCH_MAPPING_QUALIFIED_NAME, methodModifierList)) {
-                methodUrl = getUrl(methodModifierList, PATCH_MAPPING_QUALIFIED_NAME);
-            } else if (containsSpringAnnotation(DELETE_MAPPING_QUALIFIED_NAME, methodModifierList)) {
-                methodUrl = getUrl(methodModifierList, DELETE_MAPPING_QUALIFIED_NAME);
-            } else if (containsSpringAnnotation(PUT_MAPPING_QUALIFIED_NAME, methodModifierList)) {
-                methodUrl = getUrl(methodModifierList, PUT_MAPPING_QUALIFIED_NAME);
-            }
+            methodUrl = getMethodUrl(methodModifierList);
             queryList = createParameters(psiMethod.getParameterList());
             if (null == methodUrl || methodUrl.length() == 0) {
                 String methodName = psiMethod.getName();
@@ -117,7 +96,7 @@ public class CopyRestUrlAction extends AnAction {
             }
             url.append(methodUrl);
             if (null != queryList && (!queryList.isEmpty())) {
-                url.append(SystemHWUtil.CRLF_WINDOW).append(SystemHWUtil.CRLF_WINDOW);
+                url.append("?");
                 //id=X&key=X&value=X
                 url.append(queryList);
             }
@@ -130,6 +109,32 @@ public class CopyRestUrlAction extends AnAction {
 //            ToastMessage.toast("copy success",1000);
 //            Messages.showMessageDialog(project, fullUrl, "接口路径", Messages.getInformationIcon());
         }
+    }
+
+    private String getMethodUrl(PsiModifierList methodModifierList) {
+        String methodUrl = null;
+        if (containsSpringAnnotation(REQUEST_MAPPING_QUALIFIED_NAME, methodModifierList)) {
+            methodUrl = getUrl(methodModifierList, REQUEST_MAPPING_QUALIFIED_NAME);
+
+            String httpMethod = getAnnotationValue(methodModifierList, METHOD, REQUEST_MAPPING_QUALIFIED_NAME);
+
+            /*if (httpMethod.equalsIgnoreCase(GET) || httpMethod.equalsIgnoreCase(REQUEST_METHOD_GET) || httpMethod.isEmpty()) {
+
+            }*/
+
+        } else if (containsSpringAnnotation(GET_MAPPING_QUALIFIED_NAME, methodModifierList)) {
+            methodUrl = getUrl(methodModifierList, GET_MAPPING_QUALIFIED_NAME);
+//                queryList = createQueryWithParameters(psiMethod.getParameterList());
+        } else if (containsSpringAnnotation(POST_MAPPING_QUALIFIED_NAME, methodModifierList)) {
+            methodUrl = getUrl(methodModifierList, POST_MAPPING_QUALIFIED_NAME);
+        } else if (containsSpringAnnotation(PATCH_MAPPING_QUALIFIED_NAME, methodModifierList)) {
+            methodUrl = getUrl(methodModifierList, PATCH_MAPPING_QUALIFIED_NAME);
+        } else if (containsSpringAnnotation(DELETE_MAPPING_QUALIFIED_NAME, methodModifierList)) {
+            methodUrl = getUrl(methodModifierList, DELETE_MAPPING_QUALIFIED_NAME);
+        } else if (containsSpringAnnotation(PUT_MAPPING_QUALIFIED_NAME, methodModifierList)) {
+            methodUrl = getUrl(methodModifierList, PUT_MAPPING_QUALIFIED_NAME);
+        }
+        return methodUrl;
     }
 
     private String getPortAndContextPath(Project project) {
