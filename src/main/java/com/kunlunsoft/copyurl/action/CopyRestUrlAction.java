@@ -1,5 +1,6 @@
 package com.kunlunsoft.copyurl.action;
 
+import com.file.hw.props.GenericReadPropsUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
@@ -8,8 +9,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.kunlunsoft.common.dto.ConfigDto;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.util.Properties;
 
 import static com.intellij.openapi.actionSystem.CommonDataKeys.*;
 import static com.kunlunsoft.copyurl.common.SpringAnnotations.*;
@@ -56,6 +61,26 @@ public class CopyRestUrlAction extends AnAction {
         return methodUrl;
     }
 
+    @NotNull
+    private static ConfigDto getConfigDto() {
+        ConfigDto configDto = new ConfigDto();
+        String configPath = System.getProperty("user.home") + "/.idea/idea_plugin.properties";
+        try {
+
+            Properties properties = GenericReadPropsUtil.getProperties(false
+                    , configPath);
+            if (null != properties) {
+                if (properties.containsKey("with_port")) {
+                    configDto.setWithPort(Boolean.parseBoolean(properties.getProperty("with_port")));
+                }
+            }
+
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return configDto;
+    }
+
     @Override
     public void actionPerformed(AnActionEvent e) {
 
@@ -81,9 +106,11 @@ public class CopyRestUrlAction extends AnAction {
                 methodUrl = getMethodUrl(methodUrl, methodName);
             }
 
+            ConfigDto configDto = getConfigDto();
+//            Messages.showMessageDialog(project, configPath+","+HWJacksonUtils.getJsonP(configDto), "接口路径", Messages.getInformationIcon());
             StringBuilder url = new StringBuilder();
             String port2 = getPortAndContextPath(project);
-            if (null != port2 && port2.length() > 0) {
+            if (configDto.isWithPort() && null != port2 && port2.length() > 0) {
                 url.append(LOCALHOST);
                 url.append(port2);
             }
