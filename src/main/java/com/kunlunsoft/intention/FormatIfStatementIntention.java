@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.JavaTokenType;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaToken;
 import com.intellij.psi.codeStyle.CodeStyleManager;
@@ -36,6 +35,17 @@ public class FormatIfStatementIntention extends PsiElementBaseIntentionAction im
 
         PsiElement conditionalExpression = element.getParent();
         CodeStyleManager.getInstance(project).reformat(conditionalExpression);
+
+        PsiElement psiElement = element.getNextSibling();
+        while (null == psiElement.getText() || psiElement.getText().trim().length() < 1) {
+            psiElement = psiElement.getNextSibling();
+        }
+        if (psiElement.getText().contains("(")) {
+            psiElement = psiElement.getNextSibling().getParent();
+        }
+        Messages.showMessageDialog(project, psiElement.getText(), "if 223", Messages.getInformationIcon());
+        //优化 对null 的判断
+//        if (element.getNextSibling().getText())
     }
 
     @Override
